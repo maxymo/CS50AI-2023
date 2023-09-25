@@ -90,11 +90,55 @@ def shortest_path(source, target):
     that connect the source to the target.
 
     If no possible path, returns None.
-    """
 
-    # TODO
-    raise NotImplementedError
+    Agent: Actor
+    State: list of (movie_id, person_id) pairs
+    Action: 
+    
 
+    source_person = people[source]
+
+    for movie in source_person.movies:
+        actions = actions(movie)
+"""
+    frontier = QueueFrontier()
+
+    for movie_stared in people[source]["movies"]:
+        start = Node(state=(movie_stared, source), parent=None, action=None)
+        frontier.add(start)
+
+    explored = set()
+
+    while True:
+        if frontier.empty():
+            return None
+        
+        node = frontier.remove()
+
+        if is_goal(node.state, target):
+            actions = []
+            movie_people_pairs = []
+            while node.parent is not None:
+                #actions.append(node.action)
+                movie_people_pairs.append(node.state)
+                node = node.parent
+            #actions.reverse()
+            movie_people_pairs.reverse()
+            return movie_people_pairs
+        
+        explored.add(node.state)
+
+        (_, person_id) = node.state
+        for state in neighbors_for_person(person_id):
+            if not frontier.contains_state(state) and state not in explored:
+                child = Node(state=state, parent=node, action=None)
+                frontier.add(child)
+
+    return None
+
+def is_goal(state, target):
+    (_, person_id) = state
+    return person_id == target
 
 def person_id_for_name(name):
     """
@@ -137,3 +181,21 @@ def neighbors_for_person(person_id):
 
 if __name__ == "__main__":
     main()
+
+def goal_test(state, source, target):
+    if len(state) < 2:
+        return False
+    if state[0].person_id == source and state[-1].person_id == target:
+        return True
+    else:
+        return False
+    
+def get_actions(state):
+    condition = lambda x: x != state.person_id
+    neighbors = neighbors_for_person(state.person_id)
+    return {x for x in neighbors if condition(x)}
+    
+class State():
+    def __init__(self, movie_id, person_id):
+        self.movie_id = movie_id
+        self.person_id = person_id
