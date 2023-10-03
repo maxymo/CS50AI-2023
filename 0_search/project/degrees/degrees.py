@@ -1,5 +1,6 @@
 import csv
 import sys
+import time
 
 from util import Node, StackFrontier, QueueFrontier
 
@@ -90,21 +91,12 @@ def shortest_path(source, target):
     that connect the source to the target.
 
     If no possible path, returns None.
+    """
 
-    Agent: Actor
-    State: list of (movie_id, person_id) pairs
-    Action: 
-    
-
-    source_person = people[source]
-
-    for movie in source_person.movies:
-        actions = actions(movie)
-"""
     frontier = QueueFrontier()
 
     for movie_stared in people[source]["movies"]:
-        start = Node(state=(movie_stared, source), parent=None, action=None)
+        start = Node(state=source, parent=None, action=movie_stared)
         frontier.add(start)
 
     explored = set()
@@ -116,29 +108,27 @@ def shortest_path(source, target):
         node = frontier.remove()
 
         if is_goal(node.state, target):
-            actions = []
-            movie_people_pairs = []
-            while node.parent is not None:
-                #actions.append(node.action)
-                movie_people_pairs.append(node.state)
-                node = node.parent
-            #actions.reverse()
-            movie_people_pairs.reverse()
-            return movie_people_pairs
+            return get_solution(node)
         
         explored.add(node.state)
-
-        (_, person_id) = node.state
-        for state in neighbors_for_person(person_id):
-            if not frontier.contains_state(state) and state not in explored:
-                child = Node(state=state, parent=node, action=None)
+        
+        for (movie_id, person_id) in neighbors_for_person(node.state):
+            if not frontier.contains_state(person_id) and person_id not in explored:
+                child = Node(state=person_id, parent=node, action=movie_id)
+                if is_goal(person_id, target):
+                    return get_solution(child)
                 frontier.add(child)
 
-    return None
-
 def is_goal(state, target):
-    (_, person_id) = state
-    return person_id == target
+    return state == target
+
+def get_solution(node):
+    movie_people_pairs = []
+    while node.parent is not None:
+        movie_people_pairs.append((node.action, node.state))
+        node = node.parent
+    movie_people_pairs.reverse()
+    return movie_people_pairs
 
 def person_id_for_name(name):
     """
