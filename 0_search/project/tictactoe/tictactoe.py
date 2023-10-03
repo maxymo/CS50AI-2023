@@ -129,12 +129,12 @@ def minimax(board):
         new_board = result(board, action)
 
         if current_player == 'X':
-            v = min_value(new_board)
+            v = min_value(new_board, best_value)
             if v > best_value:
                 best_value = v
                 best_action = action
         else:
-            v = max_value(new_board)
+            v = max_value(new_board, best_value)
             if v < best_value:
                 best_value = v
                 best_action = action
@@ -142,19 +142,23 @@ def minimax(board):
     return best_action
 
     
-def max_value(board):
+def max_value(board, alpha):
     v = -999999
     if terminal(board):
         return utility(board)
     for action in actions(board):
-        v = max(v,min_value(result(board,action)))
+        v = max(v,min_value(result(board,action), alpha))
+        if v > alpha:
+            return v
     return v
 
-def min_value(board):
+def min_value(board, alpha):
     v = 999999
     if terminal(board):
         return utility(board)
     for action in actions(board):
-        v = min(v,max_value(result(board,action)))
+        v = min(v,max_value(result(board,action), alpha))
+        if v < alpha:
+            return v
     return v
    
