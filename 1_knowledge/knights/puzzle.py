@@ -61,18 +61,9 @@ knowledge3 = And(
     Biconditional(BKnight, Not(BKnave)),
     Biconditional(CKnight, Not(CKnave)),
 
-    # A's statement
-
-    # B's statement
-    Biconditional(BKnight, Biconditional(AKnight, BKnave)),
-    Biconditional(BKnave, Not(Biconditional(AKnight, BKnave))),
-
-    Biconditional(BKnight, CKnave),
-    Biconditional(BKnave, Not(CKnave)),
-
-    # C's statement
-    Biconditional(CKnight, AKnight),
-    Biconditional(CKnave, Not(AKnight)),
+    Biconditional(AKnight, Biconditional(AKnight, Not(AKnave))),
+    Biconditional(BKnight, And(Biconditional(AKnight, BKnave), CKnave)),
+    Biconditional(CKnight, AKnight)
 )
 
 
